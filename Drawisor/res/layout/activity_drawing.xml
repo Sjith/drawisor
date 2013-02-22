@@ -1,0 +1,59 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/layout"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical"
+    android:overScrollMode="always" >
+
+    <FrameLayout
+        android:id="@+id/placeholder"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_weight="2" >
+
+    </FrameLayout>
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="0"
+        android:background="@drawable/abs__ab_solid_light_holo"
+        android:orientation="horizontal" >
+
+        <Button
+            android:id="@+id/colorButton"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@drawable/abs__item_background_holo_light"
+            android:drawableLeft="@drawable/ic_new"
+            android:gravity="center_vertical|left"
+            android:paddingLeft="10dp"
+            android:text="Color" />
+        
+        <Button
+            android:id="@+id/sizeButton"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@drawable/abs__item_background_holo_light"
+            android:drawableLeft="@drawable/ic_new"
+            android:gravity="center_vertical|left"
+            android:paddingLeft="10dp"
+            android:text="Size" />
+        
+        <Button
+            android:id="@+id/clearButton"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@drawable/abs__item_background_holo_light"
+            android:drawableLeft="@drawable/ic_clear"
+            android:gravity="center_vertical|left"
+            android:paddingLeft="10dp"
+            android:text="Clear" />
+        
+    </LinearLayout>
+
+</LinearLayout>

@@ -1,0 +1,8 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <item android:id="@+id/newDrawing"
+          android:icon="@drawable/ic_new"
+          android:title="@string/new_label"
+          android:showAsAction="always|withText" />
+
+</menu>
