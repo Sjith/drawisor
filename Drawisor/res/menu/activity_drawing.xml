@@ -1,3 +1,8 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android" >
 
+    <item android:id="@+id/save"
+          android:icon="@drawable/ic_save"
+          android:title="@string/save_label"
+          android:showAsAction="always|withText" />
+    
 </menu>

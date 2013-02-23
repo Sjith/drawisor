@@ -18,5 +18,6 @@
     <string name="green">Green</string>
     <string name="blue">Blue</string>
     <string name="pink">Pink</string>
+    <string name="save_label">Save</string>
 
 </resources>

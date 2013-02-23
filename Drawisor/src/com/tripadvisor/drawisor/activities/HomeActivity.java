@@ -4,11 +4,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.util.Log;
 import android.widget.ArrayAdapter;
-import android.widget.EditText;
 import android.widget.ListView;
 
 import com.actionbarsherlock.app.SherlockActivity;
@@ -25,8 +24,6 @@ import com.googlecode.androidannotations.annotations.OptionsMenu;
 import com.googlecode.androidannotations.annotations.ViewById;
 import com.tripadvisor.drawisor.R;
 import com.tripadvisor.drawisor.entities.Drawing;
-import com.tripadvisor.drawisor.entities.Path;
-import com.tripadvisor.drawisor.entities.Point;
 
 @EActivity(R.layout.activity_home)
 @OptionsMenu(R.menu.activity_home)
@@ -41,28 +38,13 @@ public class HomeActivity extends SherlockActivity {
 
 	@AfterViews
 	void start() {
-		testselect();
 		loadDrawingsList();
 	}
 
-	// TODO: Remove
-	private void testselect() {
-		// Log.d("App", "TestSelect");
-		// List<Drawing> drawings = Drawing.all(Drawing.class);
-		//
-		// for (Drawing drawing : drawings) {
-		// Log.d("Drwaing Name", drawing.name);
-		// for (Path path : drawing.paths()) {
-		// Log.d("Path color", "" + path.color);
-		// Log.d("Path size", "" + path.size);
-		// for (Point point : path.points()) {
-		// Log.d("Point", "" + point.x + " : " + point.y);
-		// }
-		// }
-		// }
-		Log.d("drawings", "" + Drawing.all(Drawing.class).size());
-		Log.d("paths", "" + Path.all(Path.class).size());
-		Log.d("points", "" + Point.all(Point.class).size());
+	@Override
+	public void onResume() {
+		super.onResume();
+		loadDrawingsList();
 	}
 
 	void loadDrawingsList() {
@@ -73,30 +55,7 @@ public class HomeActivity extends SherlockActivity {
 
 	@OptionsItem
 	void newDrawing() {
-		AlertDialog.Builder alert = new AlertDialog.Builder(this);
-		alert.setTitle("New drawing");
-		alert.setMessage("Please enter the name:");
-		final EditText input = new EditText(this);
-		alert.setView(input);
-
-		alert.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-			@Override
-			public void onClick(DialogInterface dialog, int whichButton) {
-				String value = input.getText().toString();
-				Drawing drawing = new Drawing(value);
-				drawing.save();
-				startDrawingActivity(drawing);
-			}
-		});
-
-		alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-			@Override
-			public void onClick(DialogInterface dialog, int whichButton) {
-				// Canceled.
-			}
-		});
-
-		alert.show();
+		startDrawingActivity(null);
 	}
 
 	@ItemClick
@@ -151,9 +110,16 @@ public class HomeActivity extends SherlockActivity {
 	}
 
 	void startDrawingActivity(Drawing drawing) {
+		ProgressDialog progressDialog = new ProgressDialog(this);
+		progressDialog.setMessage("Opening");
+		progressDialog.show();
 		Intent i = new Intent(this, DrawingActivity_.class);
-		i.putExtra("drawingId", drawing.getId());
+		i.setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+		if (drawing != null) {
+			i.putExtra("drawingId", drawing.getId());
+		}
 		startActivity(i);
+		progressDialog.dismiss();
 	}
 
 	void deleteDrawings(final List<Integer> items) {
@@ -181,8 +147,8 @@ public class HomeActivity extends SherlockActivity {
 	}
 
 	/**
-	 * Sets an item of the list to selected. I use my own selectedItems list and I change the background myself because ListView with ListView.CHOICE_MODE_MULTIPLE_MODAL choice mode is only from API
-	 * 11 or above.
+	 * Sets an item of the list to selected. I use my own selectedItems list and I change the background myself because ListView
+	 * with ListView.CHOICE_MODE_MULTIPLE_MODAL choice mode is only from API 11 or above.
 	 *
 	 * @param position
 	 * @param selected

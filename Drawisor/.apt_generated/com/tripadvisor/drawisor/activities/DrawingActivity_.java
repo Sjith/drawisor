@@ -9,14 +9,16 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.Button;
 import android.widget.FrameLayout;
+import com.actionbarsherlock.view.Menu;
+import com.actionbarsherlock.view.MenuInflater;
+import com.actionbarsherlock.view.MenuItem;
+import com.googlecode.androidannotations.api.SdkVersionHelper;
 import com.tripadvisor.drawisor.R.layout;
 
 public final class DrawingActivity_
@@ -35,18 +37,18 @@ public final class DrawingActivity_
     }
 
     private void afterSetContentView_() {
-        colorButton = ((Button) findViewById(com.tripadvisor.drawisor.R.id.colorButton));
         sizeButton = ((Button) findViewById(com.tripadvisor.drawisor.R.id.sizeButton));
         placeholder = ((FrameLayout) findViewById(com.tripadvisor.drawisor.R.id.placeholder));
+        colorButton = ((Button) findViewById(com.tripadvisor.drawisor.R.id.colorButton));
         {
-            View view = findViewById(com.tripadvisor.drawisor.R.id.colorButton);
+            View view = findViewById(com.tripadvisor.drawisor.R.id.clearButton);
             if (view!= null) {
                 view.setOnClickListener(new OnClickListener() {
 
 
                     @Override
                     public void onClick(View view) {
-                        DrawingActivity_.this.colorButtonClicked();
+                        DrawingActivity_.this.clearButtonClicked();
                     }
 
                 }
@@ -69,14 +71,44 @@ public final class DrawingActivity_
             }
         }
         {
-            View view = findViewById(com.tripadvisor.drawisor.R.id.clearButton);
+            View view = findViewById(com.tripadvisor.drawisor.R.id.undoButton);
             if (view!= null) {
                 view.setOnClickListener(new OnClickListener() {
 
 
                     @Override
                     public void onClick(View view) {
-                        DrawingActivity_.this.clearButtonClicked();
+                        DrawingActivity_.this.undoButtonClicked();
+                    }
+
+                }
+                );
+            }
+        }
+        {
+            View view = findViewById(com.tripadvisor.drawisor.R.id.colorButton);
+            if (view!= null) {
+                view.setOnClickListener(new OnClickListener() {
+
+
+                    @Override
+                    public void onClick(View view) {
+                        DrawingActivity_.this.colorButtonClicked();
+                    }
+
+                }
+                );
+            }
+        }
+        {
+            View view = findViewById(com.tripadvisor.drawisor.R.id.redoButton);
+            if (view!= null) {
+                view.setOnClickListener(new OnClickListener() {
+
+
+                    @Override
+                    public void onClick(View view) {
+                        DrawingActivity_.this.redoButtonClicked();
                     }
 
                 }
@@ -104,13 +136,21 @@ public final class DrawingActivity_
         afterSetContentView_();
     }
 
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (((SdkVersionHelper.getSdkInt()< 5)&&(keyCode == KeyEvent.KEYCODE_BACK))&&(event.getRepeatCount() == 0)) {
+            onBackPressed();
+        }
+        return super.onKeyDown(keyCode, event);
+    }
+
     public static DrawingActivity_.IntentBuilder_ intent(Context context) {
         return new DrawingActivity_.IntentBuilder_(context);
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater menuInflater = getMenuInflater();
+        MenuInflater menuInflater = getSupportMenuInflater();
         menuInflater.inflate(com.tripadvisor.drawisor.R.menu.activity_drawing, menu);
         return super.onCreateOptionsMenu(menu);
     }
@@ -122,6 +162,10 @@ public final class DrawingActivity_
             return true;
         }
         int itemId_ = item.getItemId();
+        if (itemId_ == com.tripadvisor.drawisor.R.id.save) {
+            save();
+            return true;
+        }
         if (itemId_ == android.R.id.home) {
             home();
             return true;

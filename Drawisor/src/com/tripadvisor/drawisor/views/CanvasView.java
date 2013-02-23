@@ -37,6 +37,7 @@ public class CanvasView extends SurfaceView implements SurfaceHolder.Callback {
 	private Canvas canvas;
 	private Matrix identityMatrix;
 
+
 	public CanvasView(Context context) {
 		super(context);
 		surfaceHolder = getHolder();
@@ -56,10 +57,10 @@ public class CanvasView extends SurfaceView implements SurfaceHolder.Callback {
 
 	public void loadPaths(List<Path> paths) {
 		this.paths = paths;
-		clearAndDrawPaths();
+		clearAndDrawPaths(paths.size());
 	}
 
-	public void clearAndDrawPaths() {
+	public void clearAndDrawPaths(int undoPosition) {
 		if (!isReady || paths == null) {
 			return;
 		}
@@ -68,7 +69,8 @@ public class CanvasView extends SurfaceView implements SurfaceHolder.Callback {
 		float oldsize = paint.getStrokeWidth();
 
 		canvas.drawColor(Color.WHITE);
-		for (Path path : paths) {
+		for (int i = 0; i < undoPosition; i++) {
+			Path path = paths.get(i);
 			drawPath(canvas, path);
 		}
 		refreshCanvas();
@@ -132,7 +134,7 @@ public class CanvasView extends SurfaceView implements SurfaceHolder.Callback {
 		canvas = new Canvas();
 		canvas.setBitmap(canvasBitmap);
 		identityMatrix = new Matrix();
-		clearAndDrawPaths();
+		clearAndDrawPaths(paths.size());
 	}
 
 	@Override
