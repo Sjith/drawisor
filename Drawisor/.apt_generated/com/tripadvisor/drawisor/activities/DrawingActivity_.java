@@ -38,8 +38,23 @@ public final class DrawingActivity_
 
     private void afterSetContentView_() {
         sizeButton = ((Button) findViewById(com.tripadvisor.drawisor.R.id.sizeButton));
-        placeholder = ((FrameLayout) findViewById(com.tripadvisor.drawisor.R.id.placeholder));
         colorButton = ((Button) findViewById(com.tripadvisor.drawisor.R.id.colorButton));
+        placeholder = ((FrameLayout) findViewById(com.tripadvisor.drawisor.R.id.placeholder));
+        {
+            View view = findViewById(com.tripadvisor.drawisor.R.id.undoButton);
+            if (view!= null) {
+                view.setOnClickListener(new OnClickListener() {
+
+
+                    @Override
+                    public void onClick(View view) {
+                        DrawingActivity_.this.undoButtonClicked();
+                    }
+
+                }
+                );
+            }
+        }
         {
             View view = findViewById(com.tripadvisor.drawisor.R.id.clearButton);
             if (view!= null) {
@@ -49,6 +64,21 @@ public final class DrawingActivity_
                     @Override
                     public void onClick(View view) {
                         DrawingActivity_.this.clearButtonClicked();
+                    }
+
+                }
+                );
+            }
+        }
+        {
+            View view = findViewById(com.tripadvisor.drawisor.R.id.redoButton);
+            if (view!= null) {
+                view.setOnClickListener(new OnClickListener() {
+
+
+                    @Override
+                    public void onClick(View view) {
+                        DrawingActivity_.this.redoButtonClicked();
                     }
 
                 }
@@ -71,21 +101,6 @@ public final class DrawingActivity_
             }
         }
         {
-            View view = findViewById(com.tripadvisor.drawisor.R.id.undoButton);
-            if (view!= null) {
-                view.setOnClickListener(new OnClickListener() {
-
-
-                    @Override
-                    public void onClick(View view) {
-                        DrawingActivity_.this.undoButtonClicked();
-                    }
-
-                }
-                );
-            }
-        }
-        {
             View view = findViewById(com.tripadvisor.drawisor.R.id.colorButton);
             if (view!= null) {
                 view.setOnClickListener(new OnClickListener() {
@@ -94,21 +109,6 @@ public final class DrawingActivity_
                     @Override
                     public void onClick(View view) {
                         DrawingActivity_.this.colorButtonClicked();
-                    }
-
-                }
-                );
-            }
-        }
-        {
-            View view = findViewById(com.tripadvisor.drawisor.R.id.redoButton);
-            if (view!= null) {
-                view.setOnClickListener(new OnClickListener() {
-
-
-                    @Override
-                    public void onClick(View view) {
-                        DrawingActivity_.this.redoButtonClicked();
                     }
 
                 }

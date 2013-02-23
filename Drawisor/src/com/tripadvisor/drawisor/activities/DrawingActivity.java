@@ -42,17 +42,44 @@ import com.tripadvisor.drawisor.views.CanvasView_;
 @OptionsMenu(R.menu.activity_drawing)
 public class DrawingActivity extends SherlockActivity {
 
+	/**
+	 * Constant for setting the clear action in the undoPosition to be able to undo a clear.
+	 */
 	private static final int CLEAR = -1;
 
+	/**
+	 * Constant for the state of no return of the undo/redo. It is the state when it is impossible to return to the original state
+	 * of the drawing anymore.
+	 */
+	private static final int STATE_OF_NO_RETURN = -2;
+
+	/**
+	 * The current drawing. Needed for DB saving only.
+	 */
 	Drawing drawing;
+	/**
+	 * Whether we need to save or not.
+	 */
 	boolean needsSaving;
 
+	/**
+	 * Ugly workaround to be able to do input validation in the alertDialog for choosing the name.
+	 */
 	boolean clickedOk;
 
+	/**
+	 * Handle on the save button in the action bar (top right) to be able to show/hide it.
+	 */
 	MenuItem save;
 
+	/**
+	 * Handle on the placeholder view used to inject the CanvasView programmatically to init the Canvas correctly.
+	 */
 	@ViewById
 	FrameLayout placeholder;
+	/**
+	 * The injected CanvasView. Notice the _ at the end for using the AndroidAnnotation processed class.
+	 */
 	CanvasView_ canvasView;
 
 	@ViewById
@@ -65,14 +92,32 @@ public class DrawingActivity extends SherlockActivity {
 	private PopupMenuItem[] sizes;
 	AlertDialog sizeDialog;
 
+	/**
+	 * The current list of path. It is just used to optimize redraw when using undo/redo.
+	 */
 	List<Path> paths;
+	/**
+	 * The current path. Use for DB saving.
+	 */
 	List<Point> currentPath;
+	/**
+	 * The point from the last touch event to make a line to the next point.
+	 */
 	Point lastPoint;
+	/**
+	 * The position in the Path list of the undo/redo.
+	 */
 	int undoPosition;
+	/**
+	 * The starting undo position to be able to disable needsSaving if we undo back to the original drawing. However, if we undo
+	 * below the original position and then draw a new path it is no more possible to come back to the original state, in this
+	 * case it is set to the value STATE_OF_NO_RETURN.
+	 */
 	int startingUndoPosition;
 
 	@AfterViews
 	void start() {
+		// Inject CanvasView into placeholder and set touch listener.
 		canvasView = new CanvasView_(this);
 		placeholder.addView(canvasView);
 		canvasView.addTouchListener(new OnTouchListener() {
@@ -90,10 +135,15 @@ public class DrawingActivity extends SherlockActivity {
 
 		currentPath = new ArrayList<Point>();
 
+		// Start a SQLite transaction to optimize all DB actions and also to be able to discard all modifications at the end
+		// (transaction is rollbacked else commited).
 		ActiveAndroid.beginTransaction();
 		loadDrawing(getIntent().getLongExtra("drawingId", -1));
 	}
 
+	/**
+	 * Created the popup menu used to select the color and the size of the strokes.
+	 */
 	void setupPopupMenus() {
 		colors = new PopupMenuItem[] {
 				new PopupMenuItem(R.drawable.color_black, R.string.black, Color.BLACK),
@@ -141,6 +191,7 @@ public class DrawingActivity extends SherlockActivity {
 
 	void loadDrawing(long drawingId) {
 		if (drawingId == -1) {
+			// Since we are in a transaction, we can save the new drawing. Mandatory for ActiveAndroid OneToMany functioning.
 			drawing = new Drawing();
 			drawing.save();
 			setTitle("New drawing");
@@ -167,6 +218,8 @@ public class DrawingActivity extends SherlockActivity {
 
 	@Click
 	void clearButtonClicked() {
+		// Clear actually is just like clicking undo until having an empty drawing, except that it is set to CLEAR so that undo
+		// can undo the clear.
 		undoPosition = CLEAR;
 		canvasView.clearAndDrawPaths(undoPosition);
 		if (startingUndoPosition == 0) {
@@ -211,6 +264,12 @@ public class DrawingActivity extends SherlockActivity {
 		save(false);
 	}
 
+	/**
+	 * Save the drawing and eventually asks for a name if it is not set.
+	 *
+	 * @param thenFinish
+	 *            Whether to exit the activity after a successful save.
+	 */
 	void save(final boolean thenFinish) {
 		if (drawing.name == null) {
 			final EditText input = new EditText(this);
@@ -219,6 +278,7 @@ public class DrawingActivity extends SherlockActivity {
 					.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
 						@Override
 						public void onClick(DialogInterface dialog, int whichButton) {
+							// Ugly workaround to be able to do input validation using OnDismiss.
 							clickedOk = true;
 						}
 					}).setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
@@ -257,7 +317,9 @@ public class DrawingActivity extends SherlockActivity {
 	}
 
 	void commitToDb() {
+		// First trim the path at the end in case of undo.
 		deleteUnusedPaths();
+		// Commit the transation and start a new one.
 		ActiveAndroid.setTransactionSuccessful();
 		ActiveAndroid.endTransaction();
 		setNeedsSaving(false);
@@ -267,9 +329,11 @@ public class DrawingActivity extends SherlockActivity {
 
 	void setNeedsSaving(boolean needsSaving) {
 		this.needsSaving = needsSaving;
+		// Toggle the visibility of the save button in the action bar.
 		save.setVisible(needsSaving);
 	}
 
+	// This method is automatically backwards compatible with old SDK with AndroidAnnotation.
 	@Override
 	public void onBackPressed() {
 		if (needsSaving) {
@@ -284,6 +348,8 @@ public class DrawingActivity extends SherlockActivity {
 			alert.setNegativeButton("Discard", new DialogInterface.OnClickListener() {
 				@Override
 				public void onClick(DialogInterface dialog, int whichButton) {
+					// The transaction is rollbacked automatically before stopping the activity. That also means that if the
+					// application crashes, the data is not corrupt because it gets rollbacked.
 					stop();
 				}
 			});
@@ -314,16 +380,19 @@ public class DrawingActivity extends SherlockActivity {
 		lastPoint = point;
 
 		if (e.getAction() == MotionEvent.ACTION_UP) {
+			// Save the path only when the finger is lifted up to limit work on the GUI thread.
 			savePath();
 		}
 	}
 
 	void savePath() {
+		// Remove the paths that has been undone, they cannot be redone after a new path is created.
 		deleteUnusedPaths();
 		Path path = new Path(canvasView.getCurrentColor(), canvasView.getCurrentSize());
 		path.drawing = drawing;
 		path.save();
 		paths.add(path);
+		// We are inside a transaction, so these actions are just done in memory, so it is fast.
 		for (Point p : currentPath) {
 			p.path = path;
 			p.save();
@@ -334,9 +403,12 @@ public class DrawingActivity extends SherlockActivity {
 		lastPoint = null;
 	}
 
+	/**
+	 * Deletes the paths that are ahead of the undoPosition.
+	 */
 	void deleteUnusedPaths() {
 		if (undoPosition < startingUndoPosition) {
-			startingUndoPosition = -2;
+			startingUndoPosition = STATE_OF_NO_RETURN;
 		}
 		if (undoPosition == CLEAR) {
 			undoPosition = 0;
@@ -347,6 +419,7 @@ public class DrawingActivity extends SherlockActivity {
 		paths = paths.subList(0, undoPosition);
 	}
 
+	// Capture the home button of the action bar (top left).
 	@OptionsItem
 	void home() {
 		onBackPressed();
@@ -354,6 +427,7 @@ public class DrawingActivity extends SherlockActivity {
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
+		// Get a handle on the save button of the action bar.
 		save = menu.findItem(R.id.save);
 		save.setVisible(false);
 		return super.onCreateOptionsMenu(menu);
@@ -376,7 +450,7 @@ public class DrawingActivity extends SherlockActivity {
 		public View getView(int position, View convertView, ViewGroup parent) {
 			View view = convertView;
 
-			// initialize a view first
+			// Initialize a view first if the pool of view doesn't give us one.
 			if (view == null) {
 				LayoutInflater inflater = ((Activity) context).getLayoutInflater();
 				view = inflater.inflate(layoutResourceId, parent, false);
@@ -391,7 +465,7 @@ public class DrawingActivity extends SherlockActivity {
 		}
 	}
 
-	// PopupMenuItem is just a container
+	// PopupMenuItem is just a container for the PopupMenu Dialogs.
 	private static class PopupMenuItem {
 		public int iconResId;
 		public int textResId;

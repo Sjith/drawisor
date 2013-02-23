@@ -24,6 +24,7 @@ public class Drawing extends Model {
 		this.name = name;
 	}
 
+	// To be able to use the ArrayAdapter in the drawing list of HomeActivity.
 	@Override
 	public String toString() {
 		return name;

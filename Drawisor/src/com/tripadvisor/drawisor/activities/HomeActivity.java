@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import android.app.AlertDialog;
-import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.widget.ArrayAdapter;
@@ -29,11 +28,20 @@ import com.tripadvisor.drawisor.entities.Drawing;
 @OptionsMenu(R.menu.activity_home)
 public class HomeActivity extends SherlockActivity {
 
+	/**
+	 * The ListView displaying the drawings.
+	 */
 	@ViewById
 	ListView drawingsList;
 
+	/**
+	 * Currently selected items while in context mode (long click).
+	 */
 	List<Integer> selectedItems = new ArrayList<Integer>();
 
+	/**
+	 * The context mode that allows selection and batch delete. Activate on item long click.
+	 */
 	ActionMode actionMode;
 
 	@AfterViews
@@ -44,6 +52,7 @@ public class HomeActivity extends SherlockActivity {
 	@Override
 	public void onResume() {
 		super.onResume();
+		// Reload the drawing list when we come back from the DrawingActivity.
 		loadDrawingsList();
 	}
 
@@ -60,6 +69,7 @@ public class HomeActivity extends SherlockActivity {
 
 	@ItemClick
 	void drawingsListItemClicked(int position) {
+		// Are we in context mode? (batch select)
 		if (actionMode == null) {
 			Drawing drawing = (Drawing) drawingsList.getItemAtPosition(position);
 			startDrawingActivity(drawing);
@@ -75,6 +85,7 @@ public class HomeActivity extends SherlockActivity {
 			return;
 		}
 
+		// Start context mode.
 		actionMode = startActionMode(new ActionMode.Callback() {
 			@Override
 			public boolean onCreateActionMode(ActionMode mode, Menu menu) {
@@ -110,16 +121,12 @@ public class HomeActivity extends SherlockActivity {
 	}
 
 	void startDrawingActivity(Drawing drawing) {
-		ProgressDialog progressDialog = new ProgressDialog(this);
-		progressDialog.setMessage("Opening");
-		progressDialog.show();
 		Intent i = new Intent(this, DrawingActivity_.class);
 		i.setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
 		if (drawing != null) {
 			i.putExtra("drawingId", drawing.getId());
 		}
 		startActivity(i);
-		progressDialog.dismiss();
 	}
 
 	void deleteDrawings(final List<Integer> items) {
@@ -149,9 +156,11 @@ public class HomeActivity extends SherlockActivity {
 	/**
 	 * Sets an item of the list to selected. I use my own selectedItems list and I change the background myself because ListView
 	 * with ListView.CHOICE_MODE_MULTIPLE_MODAL choice mode is only from API 11 or above.
-	 *
+	 * 
 	 * @param position
+	 *            position of item.
 	 * @param selected
+	 *            whether to select it or not.
 	 */
 	void setItemSelected(int position, boolean selected) {
 		if (selected) {
