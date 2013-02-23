@@ -4,11 +4,12 @@ import java.util.List;
 
 import com.activeandroid.Model;
 import com.activeandroid.annotation.Column;
+import com.activeandroid.annotation.Column.ForeignKeyAction;
 import com.activeandroid.annotation.Table;
 
 @Table(name = "Paths")
 public class Path extends Model {
-	@Column(name = "Drawing")
+	@Column(name = "Drawing", onDelete = ForeignKeyAction.CASCADE)
 	public Drawing drawing;
 	@Column(name = "Color")
 	public int color;

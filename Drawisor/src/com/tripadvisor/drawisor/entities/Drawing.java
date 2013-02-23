@@ -25,13 +25,6 @@ public class Drawing extends Model {
 	}
 
 	@Override
-	public void delete() {
-
-		// TODO Auto-generated method stub
-		super.delete();
-	}
-
-	@Override
 	public String toString() {
 		return name;
 	}

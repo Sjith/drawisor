@@ -35,9 +35,9 @@ public final class DrawingActivity_
     }
 
     private void afterSetContentView_() {
-        sizeButton = ((Button) findViewById(com.tripadvisor.drawisor.R.id.sizeButton));
         placeholder = ((FrameLayout) findViewById(com.tripadvisor.drawisor.R.id.placeholder));
         colorButton = ((Button) findViewById(com.tripadvisor.drawisor.R.id.colorButton));
+        sizeButton = ((Button) findViewById(com.tripadvisor.drawisor.R.id.sizeButton));
         {
             View view = findViewById(com.tripadvisor.drawisor.R.id.sizeButton);
             if (view!= null) {

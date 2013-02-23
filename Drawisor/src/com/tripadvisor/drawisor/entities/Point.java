@@ -2,11 +2,12 @@ package com.tripadvisor.drawisor.entities;
 
 import com.activeandroid.Model;
 import com.activeandroid.annotation.Column;
+import com.activeandroid.annotation.Column.ForeignKeyAction;
 import com.activeandroid.annotation.Table;
 
 @Table(name = "Points")
 public class Point extends Model {
-	@Column(name = "Path")
+	@Column(name = "Path", onDelete = ForeignKeyAction.CASCADE)
 	public Path path;
 	@Column(name = "X")
 	public int x;
