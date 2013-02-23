@@ -35,9 +35,9 @@ public final class DrawingActivity_
     }
 
     private void afterSetContentView_() {
-        placeholder = ((FrameLayout) findViewById(com.tripadvisor.drawisor.R.id.placeholder));
-        colorButton = ((Button) findViewById(com.tripadvisor.drawisor.R.id.colorButton));
         sizeButton = ((Button) findViewById(com.tripadvisor.drawisor.R.id.sizeButton));
+        colorButton = ((Button) findViewById(com.tripadvisor.drawisor.R.id.colorButton));
+        placeholder = ((FrameLayout) findViewById(com.tripadvisor.drawisor.R.id.placeholder));
         {
             View view = findViewById(com.tripadvisor.drawisor.R.id.sizeButton);
             if (view!= null) {
@@ -54,21 +54,6 @@ public final class DrawingActivity_
             }
         }
         {
-            View view = findViewById(com.tripadvisor.drawisor.R.id.clearButton);
-            if (view!= null) {
-                view.setOnClickListener(new OnClickListener() {
-
-
-                    @Override
-                    public void onClick(View view) {
-                        DrawingActivity_.this.clearButtonClicked();
-                    }
-
-                }
-                );
-            }
-        }
-        {
             View view = findViewById(com.tripadvisor.drawisor.R.id.colorButton);
             if (view!= null) {
                 view.setOnClickListener(new OnClickListener() {
@@ -77,6 +62,21 @@ public final class DrawingActivity_
                     @Override
                     public void onClick(View view) {
                         DrawingActivity_.this.colorButtonClicked();
+                    }
+
+                }
+                );
+            }
+        }
+        {
+            View view = findViewById(com.tripadvisor.drawisor.R.id.clearButton);
+            if (view!= null) {
+                view.setOnClickListener(new OnClickListener() {
+
+
+                    @Override
+                    public void onClick(View view) {
+                        DrawingActivity_.this.clearButtonClicked();
                     }
 
                 }

@@ -1,3 +1,6 @@
 [submodule "ActiveAndroid"]
 	path = ActiveAndroid
 	url = git@github.com:qwertzguy/ActiveAndroid.git
+[submodule "ActionBarSherlock"]
+	path = ActionBarSherlock
+	url = git@github.com:qwertzguy/ActionBarSherlock.git
