@@ -35,24 +35,9 @@ public final class DrawingActivity_
     }
 
     private void afterSetContentView_() {
-        sizeButton = ((Button) findViewById(com.tripadvisor.drawisor.R.id.sizeButton));
         colorButton = ((Button) findViewById(com.tripadvisor.drawisor.R.id.colorButton));
+        sizeButton = ((Button) findViewById(com.tripadvisor.drawisor.R.id.sizeButton));
         placeholder = ((FrameLayout) findViewById(com.tripadvisor.drawisor.R.id.placeholder));
-        {
-            View view = findViewById(com.tripadvisor.drawisor.R.id.sizeButton);
-            if (view!= null) {
-                view.setOnClickListener(new OnClickListener() {
-
-
-                    @Override
-                    public void onClick(View view) {
-                        DrawingActivity_.this.sizeButtonClicked();
-                    }
-
-                }
-                );
-            }
-        }
         {
             View view = findViewById(com.tripadvisor.drawisor.R.id.colorButton);
             if (view!= null) {
@@ -62,6 +47,21 @@ public final class DrawingActivity_
                     @Override
                     public void onClick(View view) {
                         DrawingActivity_.this.colorButtonClicked();
+                    }
+
+                }
+                );
+            }
+        }
+        {
+            View view = findViewById(com.tripadvisor.drawisor.R.id.sizeButton);
+            if (view!= null) {
+                view.setOnClickListener(new OnClickListener() {
+
+
+                    @Override
+                    public void onClick(View view) {
+                        DrawingActivity_.this.sizeButtonClicked();
                     }
 
                 }
